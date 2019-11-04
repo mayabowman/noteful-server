@@ -8,7 +8,7 @@ const bodyParser = express.json()
 
 const sanitizeNote = note => ({
   id: note.id,
-  note_note_name: xss(note.note_note_name),
+  note_name: xss(note.note_name),
   content: xss(note.content),
   folder_id: note.folder_id,
   modified: note.modified
@@ -25,7 +25,7 @@ notesRouter
       .catch(next)
   })
   .post(bodyParser, (req, res, next) => {
-    const { note_note_name, folder_id, content } = req.body
+    const { note_name, folder_id, content } = req.body
     const newNote = { note_name, folder_id, content }
 
     for (const [key, value] of Object.entries(newNote)) {
