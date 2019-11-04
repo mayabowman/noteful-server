@@ -5,7 +5,6 @@ const FoldersService = require('./folders-service')
 
 const foldersRouter = express.Router()
 const bodyParser = express.json()
-const knexInstance = req.app.get('db')
 
 const sanitizeFolder = folder => ({
   id: folder.id,
@@ -16,7 +15,7 @@ const sanitizeFolder = folder => ({
 foldersRouter
   .route('/')
   .get((req, res, next) => {
-    FoldersService.getAllFolders(knexInstance)
+    FoldersService.getAllFolders(req.app.get('db'))
       .then(folders => {
         res.json(folders.map(sanitizeFolder))
       })
@@ -29,7 +28,7 @@ foldersRouter
       return res.status(400).send('Folder name is required')
     }
 
-    FoldersService.addFolder(knexInstance, newFolder)
+    FoldersService.addFolder(req.app.get('db'), newFolder)
       .then(folder => {
         res
           .status(201)
@@ -42,7 +41,7 @@ foldersRouter
 foldersRouter
   .route('/:id')
   .all((req, res, next) => {
-    FoldersService.getById(knexInstance, req.params.id)
+    FoldersService.getById(req.app.get('db'), req.params.id)
       .then(folder => {
         if (!folder) {
           return res.status(404).json({
@@ -57,7 +56,7 @@ foldersRouter
     res.json(sanitizeFolder(res.folder))
   })
   .delete((req, res, next) => {
-    FoldersService.deleteFolder(knexInstance, req.params.id)
+    FoldersService.deleteFolder(req.app.get('db'), req.params.id)
       .then(() => {
         res.status(204).end()
       })
@@ -67,16 +66,16 @@ foldersRouter
     const { name } = req.body
     const folderUpdate = { name }
 
-    if(!name) {
+    if (!name) {
       return res.status(400).json({
         error: { message: 'Request must contain folder name' }
       })
-      FoldersService.updateFolder(knexInstance, req.params.id, folderUpdate)
+    }
+    FoldersService.updateFolder(req.app.get('db'), req.params.id, folderUpdate)
         .then(() => {
           res.status(204).end()
         })
         .catch(next)
-    }
   })
 
 module.exports = foldersRouter

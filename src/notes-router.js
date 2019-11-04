@@ -5,7 +5,6 @@ const NotesService = require('./notes-service')
 
 const notesRouter = express.Router()
 const bodyParser = express.json()
-const knexInstance = req.app.get('db')
 
 const sanitizeNote = note => ({
   id: note.id,
@@ -19,7 +18,7 @@ notesRouter
   .route('/')
   .get((req, res, next) => {    
     
-    NotesService.getAllNotes(knexInstance)
+    NotesService.getAllNotes(req.app.get('db'))
       .then(notes => {
         res.json(notes.map(sanitizeNote))
       })
@@ -36,7 +35,7 @@ notesRouter
         })
       }
     }
-    NotesService.addNote(knexInstance, newNote)
+    NotesService.addNote(req.app.get('db'), newNote)
       .then(note => {
         res
           .status(201)
@@ -49,7 +48,7 @@ notesRouter
 notesRouter
   .route('/:id')
   .all((req, res, next) => {
-    NotesService.getById(knexInstance, req.params.id)
+    NotesService.getById(req.app.get('db'), req.params.id)
       .then(note => {
         if (!note) {
           return res.status(404).json({
@@ -66,7 +65,7 @@ notesRouter
   .delete(bodyParser, (req, res) => {
     const { id } = req.params
 
-    NotesService.deleteNote(knexInstance, id)
+    NotesService.deleteNote(req.app.get('db'), id)
       .then(() => {
         res.status(204).end()
       })
@@ -82,7 +81,7 @@ notesRouter
         error: { message: 'Request must contain either note_name, folder_id, or content' }
       })
     }
-    NotesService.updateNote(knexInstance, req.params.id, noteUpdate)
+    NotesService.updateNote(req.app.get('db'), req.params.id, noteUpdate)
       .then(() => {
         res.status(204).end()
       })
