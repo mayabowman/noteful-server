@@ -22,7 +22,7 @@ foldersRouter
       .catch(next)
   })
   .post(bodyParser, (req, res, next) => {
-    const { folder_name } = req.body
+    const folder_name = req.body.folder_name
     const newFolder = { folder_name }
     if (!folder_name) {
       return res.status(400).send('Folder name is required')
