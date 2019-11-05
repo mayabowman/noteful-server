@@ -22,9 +22,9 @@ foldersRouter
       .catch(next)
   })
   .post(bodyParser, (req, res, next) => {
-    const { name } = req.body
-    const newFolder = { name }
-    if (!name) {
+    const { folder_name } = req.body
+    const newFolder = { folder_name }
+    if (!folder_name) {
       return res.status(400).send('Folder name is required')
     }
 
@@ -63,8 +63,8 @@ foldersRouter
       .catch
   })
   .patch(bodyParser, (req, res, next) => {
-    const { name } = req.body
-    const folderUpdate = { name }
+    const { folder_name } = req.body
+    const folderUpdate = { folder_name }
 
     if (!name) {
       return res.status(400).json({
