@@ -62,7 +62,7 @@ notesRouter
   .get((req, res, next) => {
     res.json(sanitizeNote(res.note))
   })
-  .delete(bodyParser, (req, res) => {
+  .delete(bodyParser, (req, res, next) => {
     const { id } = req.params
 
     NotesService.deleteNote(req.app.get('db'), id)
